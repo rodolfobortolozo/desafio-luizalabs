@@ -1,0 +1,34 @@
+version: "3.9"
+
+networks:
+  lablogistica-network:
+    driver: bridge
+
+services:
+  lablogistica-postgres:
+    container_name: lablogistica-postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - lablogistica-network
+    volumes:
+      - d:\volumes_docker\lablogistica\mysql:/var/lib/mysql
+
+  lablogistica-api:
+    image: lablogistica:latest
+    environment:
+      DATABASE_URL : jdbc:postgresql://lablogistica-postgres:5432/postgres
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    networks:
+      - lablogistica-network
+    volumes:
+      - d:\volumes_docker\lablogistica\uploads:/uploads
+    depends_on:
+      - lablogistica-postgres
+    restart: on-failure
